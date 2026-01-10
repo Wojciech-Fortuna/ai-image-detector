@@ -9,12 +9,12 @@ The project consists of a backend API with batch CLI support and a web frontend.
 ## Project Structure
 
 ```text
-project/
-│
+.
 ├── backend/     # Backend API and batch CLI
 ├── frontend/    # Web frontend application
 ├── scripts/     # Non-production scripts for training, data generation, evaluation and utility tasks
 │
+├── LICENSE
 ├── .gitignore
 └── README.md
 ```
