@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TORCH_HOME=/app/.cache/torch
+      - HF_HOME=/app/.cache/huggingface
+      - PYTHONPATH=/app
+      - LOCAL_DIR=/app/models
+      - HF_MODELS_REPO=Wojciech-Fortuna/ai-image-detector-models
+      - HF_REVISION=main
+      - PYTHONWARNINGS=ignore:pkg_resources is deprecated
+    volumes:
+      - ./models:/app/models
+      - model_cache:/app/.cache
+    command: >
+      sh -lc "python /app/scripts/download_models.py
+      && python /app/scripts/preload_models.py
+      && uvicorn app:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  model_cache:

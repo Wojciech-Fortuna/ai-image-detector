@@ -1,0 +1,23 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+huggingface_hub
+fastapi
+uvicorn
+python-multipart
+Pillow
+matplotlib
+numpy==1.26.4
+joblib
+catboost
+face-recognition
+c2pa-python
+timm
+opencv-python
+PyWavelets
+pytest
+scikit-learn==1.7.0
+setuptools<81
+torch==2.2.2+cpu
+torchvision==0.17.2+cpu
+
+git+https://github.com/openai/CLIP.git
