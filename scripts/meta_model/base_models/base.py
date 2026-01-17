@@ -11,6 +11,7 @@ class MethodResult:
     score: float
     metrics: Dict[str, float]
     visuals_b64: Dict[str, str]
+    task: str = "detection"
 
 
 class BaseMethod:

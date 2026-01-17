@@ -23,7 +23,7 @@ PCE_NEIGH = 11
 COV_FLOOR = 0.01
 XSTD_FLOOR = 0.001
 
-PCE_THRESHOLD = 66.582400
+PCE_THRESHOLD = 67.582400
 
 
 def _img_to_b64_png(img: Image.Image) -> str:
