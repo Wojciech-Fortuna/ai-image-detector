@@ -26,6 +26,13 @@ def preload_clip():
     import clip
     _model, _preprocess = clip.load("ViT-B/32", device="cpu")
 
+def preload_openclip():
+    import open_clip
+    model_name = "hf-hub:laion/CLIP-ViT-L-14-DataComp.XL-s13B-b90K"
+    _model, _preprocess_train, _preprocess_val = open_clip.create_model_and_transforms(model_name)
+    _model.eval()
+    _model.to("cpu")
+
 def main():
     print("Preload: importing all methods...")
     import_all_methods()
@@ -38,6 +45,9 @@ def main():
 
     print("Preload: CLIP...")
     preload_clip()
+
+    print("Preload: OpenCLIP (hf-hub)...")
+    preload_openclip()
 
     print("Preload done.")
 

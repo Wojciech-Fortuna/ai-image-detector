@@ -22,7 +22,7 @@ META_METHOD_NAME = "combined_methods"
 META_METHOD_FAST_NAME = "combined_methods_fast"
 META_MODEL_ONLY_NAME = "meta_model_only"
 
-DEFAULT_META_MODEL_PATH = Path("models") / "meta_model.joblib"
+DEFAULT_META_MODEL_PATH = Path("models") / "meta_model_v2.joblib"
 
 _META_MODEL_PATH: str = DEFAULT_META_MODEL_PATH
 _META_PACKAGE_CACHE: Optional[Dict[str, Any]] = None

@@ -19,5 +19,6 @@ scikit-learn==1.7.0
 setuptools<81
 torch==2.2.2+cpu
 torchvision==0.17.2+cpu
+open_clip_torch
 
 git+https://github.com/openai/CLIP.git
