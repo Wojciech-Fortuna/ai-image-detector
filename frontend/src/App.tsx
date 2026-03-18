@@ -13,7 +13,6 @@ import { zipSync, strToU8, unzipSync, strFromU8 } from "fflate";
 const META_KEY = "combined_methods";
 const META_FAST_KEY = "combined_methods_fast";
 const META_ONLY_KEY = "meta_model_only";
-const META_LEGACY_KEY = "all_methods"; // backward compatibility
 const MAX_DISPLAY_WIDTH = 512;
 
 
@@ -310,15 +309,6 @@ export default function App() {
     getJSON<MethodsResp>("/methods")
       .then((d) => {
         setMethods(d.methods);
-
-        setSelected((prev) => {
-          const s = new Set(prev);
-          if (s.has(META_LEGACY_KEY)) {
-            s.delete(META_LEGACY_KEY);
-            s.add(META_KEY);
-          }
-          return Array.from(s);
-        });
       })
       .catch((e) => setErr(String(e)));
   }, []);
@@ -338,8 +328,7 @@ export default function App() {
   const metaSelected =
     selected.includes(META_KEY) ||
     selected.includes(META_FAST_KEY) ||
-    selected.includes(META_ONLY_KEY) ||
-    selected.includes(META_LEGACY_KEY);
+    selected.includes(META_ONLY_KEY);
 
   useEffect(() => {
     if (metaSelected && selected.length > 1) {
@@ -350,8 +339,7 @@ export default function App() {
         : [META_KEY];
       setSelected(next);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metaSelected]);
+  }, [metaSelected, selected]);
 
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const [valueLeftPx, setValueLeftPx] = useState(0);
@@ -496,12 +484,7 @@ export default function App() {
       const fd = new FormData();
       fd.append("file", f);
       fd.append("threshold", String(threshold));
-
-      const normalizedSelected = selected.map((x) =>
-        x === META_LEGACY_KEY ? META_KEY : x
-      );
-
-      fd.append("methods_json", JSON.stringify(normalizedSelected));
+      fd.append("methods_json", JSON.stringify(selected));
 
       if (isZipFile(f)) {
         const blob = await postFormBlob("/analyze_zip", fd, {
@@ -539,8 +522,7 @@ export default function App() {
       (k) =>
         k !== META_KEY &&
         k !== META_FAST_KEY &&
-        k !== META_ONLY_KEY &&
-        k !== META_LEGACY_KEY
+        k !== META_ONLY_KEY
     );
 
     let displayLabel = report.result.label;
@@ -591,10 +573,6 @@ export default function App() {
     const comps = { ...(report?.result.components || {}) } as Record<string, any>;
     if ("prnu" in comps && isNullish(comps.prnu)) comps.prnu = "unknown";
     if ("c2pa" in comps && isNullish(comps.c2pa)) comps.c2pa = "unknown";
-    if (META_LEGACY_KEY in comps && !(META_KEY in comps)) {
-      (comps as any)[META_KEY] = (comps as any)[META_LEGACY_KEY];
-      delete (comps as any)[META_LEGACY_KEY];
-    }
     return comps;
   }, [report]);
 
@@ -606,10 +584,7 @@ export default function App() {
 
   function toggleMeta(checked: boolean) {
     if (checked) setSelected([META_KEY]);
-    else
-      setSelected((prev) =>
-        prev.filter((x) => x !== META_KEY && x !== META_LEGACY_KEY)
-      );
+    else setSelected((prev) => prev.filter((x) => x !== META_KEY));
 
     setMethodsError(null);
   }
@@ -634,8 +609,7 @@ export default function App() {
         (x) =>
           x !== META_KEY &&
           x !== META_FAST_KEY &&
-          x !== META_ONLY_KEY &&
-          x !== META_LEGACY_KEY
+          x !== META_ONLY_KEY
       );
 
       if (checked) next = Array.from(new Set([...next, key]));
@@ -737,8 +711,7 @@ export default function App() {
                     (m) =>
                       m.key !== META_KEY &&
                       m.key !== META_FAST_KEY &&
-                      m.key !== META_ONLY_KEY &&
-                      m.key !== META_LEGACY_KEY
+                      m.key !== META_ONLY_KEY
                   )
                   .sort((a, b) => a.key.localeCompare(b.key))
                   .map((m) => (
@@ -766,10 +739,7 @@ export default function App() {
                   <input
                     type="checkbox"
                     className="h-4 w-4 accent-[#ff4b4b] rounded-[3px]"
-                    checked={
-                      selected.includes(META_KEY) ||
-                      selected.includes(META_LEGACY_KEY)
-                    }
+                    checked={selected.includes(META_KEY)}
                     onChange={(e) => toggleMeta(e.target.checked)}
                   />
                   <div className="text-sm">{META_KEY}</div>
@@ -915,10 +885,9 @@ export default function App() {
                   {err}
                   {showBackendHint && (
                     <div className="mt-2 text-xs text-red-700/80">
-                      Wygląda jak brak backendu lub CORS. Sprawdź czy API działa
-                      na <b>{API_BASE}</b> i ma endpointy{" "}
-                      <code>/methods</code>, <code>/analyze</code> oraz{" "}
-                      <code>/analyze_zip</code>.
+                      It looks like the backend is unreachable or blocked by CORS.
+                      Check if the API is running at <b>{API_BASE}</b> and exposes{" "}
+                      <code>/methods</code>, <code>/analyze</code> and <code>/analyze_zip</code>.
                     </div>
                   )}
                 </div>
